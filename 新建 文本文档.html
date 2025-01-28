@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: linear-gradient(135deg, #c00 20%, #ff4545 80%);
+            background-image: 
+                linear-gradient(30deg, rgba(255,215,0,0.1) 30%, transparent 30%),
+                linear-gradient(-30deg, rgba(255,215,0,0.1) 30%, transparent 30%);
+            font-family: '微软雅黑', sans-serif;
+        }
+
+        /* 背景装饰样式 */
+        .decor {
+            position: fixed;
+            opacity: 0.6;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .lantern {
+            width: 40px;
+            height: 60px;
+            background: #ff4444;
+            border-radius: 20px;
+            animation: swing 4s ease-in-out infinite;
+            box-shadow: 0 5px 15px rgba(255,68,68,0.3);
+        }
+        .lantern::after {
+            content: "🎐";
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .gold-flake { /* 金色碎花 */
+            width: 15px;
+            height: 15px;
+            background: linear-gradient(45deg, gold 50%, orange);
+            clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+            animation: float 8s linear infinite;
+        }
+        .fu-character { /* 福字 */
+            color: gold;
+            font-size: 40px;
+            font-weight: bold;
+            animation: rotate 15s linear infinite;
+        }
+        .firework { /* 烟花粒子 */
+            width: 4px;
+            height: 4px;
+            background: #fff;
+            border-radius: 50%;
+            animation: spark 1.5s ease-out infinite;
+        }
+
+        /* 主文本样式 */
+        #main-text {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 52px;
+            color: gold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            z-index: 100;
+            animation: zoom 1s infinite alternate;
+        }
+
+        /* 弹幕样式 */
+        .damaku {
+            position: absolute;
+            white-space: nowrap;
+            font-size: 24px;
+            color: gold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            animation: moveRight 8s linear forwards;
+            z-index: 50;
+        }
+
+        .poop {
+            color: #8B4513;
+            font-size: 32px;
+        }
+
+        /* 动画定义 */
+        @keyframes moveRight {
+            from { left: -100%; }
+            to { left: 100%; }
+        }
+        @keyframes zoom {
+            from { transform: translate(-50%, -50%) scale(1); }
+            to { transform: translate(-50%, -50%) scale(1.2); }
+        }
+        @keyframes swing {
+            0%, 100% { transform: rotate(-10deg); }
+            50% { transform: rotate(10deg); }
+        }
+        @keyframes float {
+            0% { transform: translateY(-100vh) rotate(0deg); }
+            100% { transform: translateY(100vh) rotate(360deg); }
+        }
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes spark {
+            0% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(3); }
+        }
+    </style>
+</head>
+<body>
+    <!-- 背景装饰 -->
+    <div class="decor lantern" style="left:15%;top:10%"></div>
+    <div class="decor fu-character" style="right:20%;top:30%">福</div>
+    <div class="decor gold-flake" style="left:70%;top:60%"></div>
+
+    <!-- 主文本 -->
+    <div id="main-text">郑佳依🎉新年快乐！</div>
+
+    <script>
+        // 动态生成背景装饰
+        function createDecor() {
+            const types = ['lantern', 'gold-flake', 'fu-character', 'firework'];
+            for(let i=0; i<25; i++) {
+                const decor = document.createElement('div');
+                decor.className = `decor ${types[Math.floor(Math.random()*types.length)]}`;
+                decor.style.left = Math.random() * 100 + '%';
+                decor.style.top = Math.random() * 100 + '%';
+                decor.style.animationDuration = Math.random()*5 + 5 + 's';
+                decor.style.animationDelay = Math.random()*2 + 's';
+                if(Math.random() > 0.5) decor.style.animationDirection = 'reverse';
+                
+                // 福字特殊处理
+                if(decor.className.includes('fu-character')) {
+                    decor.innerHTML = Math.random() > 0.5 ? "福" : "囍";
+                    decor.style.fontSize = Math.random()*20 + 30 + 'px';
+                }
+                
+                document.body.appendChild(decor);
+            }
+        }
+        createDecor();
+
+        // 弹幕系统
+        const blessings = [
+            "🎊新年快乐🎊", "🐰万事如意🐰", "🎁心想事成🎁",
+            "🍊大吉大利🍊", "💰财源广进💰", "🏮福星高照🏮"
+        ];
+
+        // 第一阶段：新年祝福弹幕
+        let interval1 = setInterval(() => {
+            createDamaku(blessings[Math.floor(Math.random() * blessings.length)]);
+        }, 800);
+
+        // 第二阶段：密集郑佳依弹幕
+        setTimeout(() => {
+            clearInterval(interval1);
+            let count = 0;
+            let interval2 = setInterval(() => {
+                for(let i = 0; i < 5; i++) {
+                    createDamaku("🍬郑佳依新年快乐🍭");
+                }
+                if(count++ > 20) clearInterval(interval2);
+            }, 300);
+        }, 5000);
+
+        // 第三阶段：粑粑弹幕
+        setTimeout(() => {
+            let interval3 = setInterval(() => {
+                for(let i = 0; i < 10; i++) {
+                    let poop = document.createElement('div');
+                    poop.className = 'damaku poop';
+                    poop.style.top = Math.random() * 100 + '%';
+                    poop.style.animationDuration = Math.random() * 3 + 2 + 's';
+                    poop.innerHTML = '💩'.repeat(Math.floor(Math.random() * 5) + 3);
+                    document.body.appendChild(poop);
+                }
+            }, 200);
+        }, 8000);
+
+        function createDamaku(text) {
+            const damaku = document.createElement('div');
+            damaku.className = 'damaku';
+            damaku.style.top = Math.random() * 90 + 5 + '%';
+            damaku.style.animationDuration = Math.random() * 3 + 5 + 's';
+            damaku.innerHTML = text;
+            document.body.appendChild(damaku);
+            
+            setTimeout(() => damaku.remove(), 10000);
+        }
+    </script>
+</body>
+</html>
